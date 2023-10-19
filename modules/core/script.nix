@@ -2,6 +2,21 @@
 
 let
   inherit (lib) mkOption types;
+  scriptPart = let
+    inherit (types) attrsOf listOf either str submodule lines;
+    scriptWithDeps = {
+      deps = mkOption {
+        type = listOf str;
+        default = [ ];
+        description = "List of dependencies. This script fragment will run after these.";
+      };
+      text = mkOption {
+        type = str;
+        description = "The contents of the script fragment.";
+      };
+    };
+  in
+  attrsOf (either str (submodule { options = scriptWithDeps; }));
 in
 {
   options.core = {
@@ -29,37 +44,51 @@ in
       '';
     };
 
-    scriptFragments = mkOption {
+    generationScripts = mkOption {
       description = ''
-        Fragments of the provisioning script to be concatenated together
-        into the final script.
+        Scripts that are run to setup a new generation directory.
+        They are run before activationScripts, and should only concert
+        themselves with the generation state directory provided in $generationDir.
       '';
       default = { };
-      type =
-        let
-          inherit (types) attrOf listOf either str submodule lines;
-          scriptWithDeps = {
-            deps = mkOption {
-              type = listOf str;
-              default = [ ];
-              description = "List of dependencies. This script fragment will run after these.";
-            };
-            text = mkOption {
-              type = lines;
-              description = "The contents of the script fragment.";
-            };
-          };
-        in
-        attrOf (either str (submodule { options = scriptWithDeps; }));
+      type = scriptPart;
+    };
+
+    activationScripts = mkOption {
+      description = ''
+        Scripts that are run to activate a new generation.
+        They are run after generationScripts.
+      '';
+      default = { };
+      type = scriptPart;
     };
   };
 
   config.core.finalScript =
     let
+      inherit (lib) mapAttrs attrNames isString id;
+      inherit (lib.stringsWithDeps) textClosureMap noDepEntry;
+      inherit (builtins) map;
+
       replacements = {
         "@sudo@" = config.core.sudoCommand;
         "@stateDir@" = config.core.stateDir;
       };
+
+      wrapScriptPart = name: part: part // {
+        text = ''
+          _log "Running generation part ${name}..."
+          {
+          ${part.text}
+          }
+          _log "Finished generation part ${name}"
+        '';
+      };
+
+      generationScripts = config.core.generationScripts;
+      generationScript = textClosureMap id
+        (mapAttrs (n: v: wrapScriptPart n (if isString v then noDepEntry v else v)) generationScripts)
+        (attrNames generationScripts);
     in
     lib.replaceStrings (lib.attrNames replacements) (lib.attrValues replacements) ''
       #!/usr/bin/env bash
@@ -68,25 +97,30 @@ in
       set -o nounset
       set -o pipefail
 
-      echo "---"
-      echo "Starting provisioning process..."
-      echo "---"
+      ${builtins.readFile ./lib.sh}
 
-      (
-        echo "Preparing provisioning state directory..."
-        @sudo@ mkdir -p "@stateDir@"
-        @sudo@ mkdir -p "@stateDir@/generations"
+      _log_big "Starting provisioning process..."
 
-        echo "Finding the latest generation..."
+      {
+        _log "Preparing provisioning state directory..."
+        _ensure_dir "@stateDir@/generations"
+      }
+
+      {
+        _log "Finding the latest generation..."
         latestGeneration="$(ls -1 "@stateDir@/generations" | sort -n | tail -n 1)"
 
         currentGeneration=$((latestGeneration + 1))
+        _log "Previous generation: #''${latestGeneration:-0}, current generation: #$currentGeneration"
 
-        echo "Current generation: #$currentGeneration"
-      )
+        generationDir="@stateDir@/generations/$currentGeneration"
+        _ensure_dir "$generationDir"
+      }
 
-      echo "---"
-      echo "Provisioning script complete!"
-      echo "---"
+      _log_big "Running generation scripts..."
+      ${generationScript}
+      _log_big "Finished generation scripts."
+
+      _log_big "Provisioning script complete!"
     '';
 }

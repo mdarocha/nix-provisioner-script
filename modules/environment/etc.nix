@@ -1,7 +1,9 @@
-{ lib, ... }:
+{ lib, config, ... }:
 
 let
   inherit (lib) mkOption types;
+
+  cfg = config.environment.etc;
 in
 {
   options.environment.etc = mkOption {
@@ -38,10 +40,33 @@ in
           };
 
           text = mkOption {
-            type = lines;
+            type = str;
             description = "Text of the file.";
           };
         };
       }));
+  };
+
+  config = let
+    inherit (lib) attrNames filterAttrs listToAttrs;
+    inherit (builtins) map;
+
+    fileNames = attrNames (filterAttrs (n: v: v.enable) cfg);
+  in {
+    core.generationScripts = listToAttrs (map (n:
+    let
+      file = cfg.${n};
+    in {
+      name = "etc-${n}";
+      value = ''
+        _ensure_dir "$(dirname "$generationDir/etc/${file.target}")";
+
+        _log "Generating /etc/${file.target}";
+        cat <<EOF > "$generationDir/etc/${file.target}"
+        ${file.text}
+        EOF
+        _log "Generated /etc/${file.target}";
+      '';
+    }) fileNames);
   };
 }
