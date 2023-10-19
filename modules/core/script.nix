@@ -54,33 +54,39 @@ in
     };
   };
 
-  config.core.finalScript = let
-    replacements = {
-      "@sudo@" = config.core.sudoCommand;
-      "@stateDir@" = config.core.stateDir;
-    };
-  in lib.replaceStrings (lib.attrNames replacements) (lib.attrValues replacements) ''
-    #!/usr/bin/env bash
-    # generated with nix-provisioner-script
-    set -o errexit
-    set -o nounset
-    set -o pipefail
+  config.core.finalScript =
+    let
+      replacements = {
+        "@sudo@" = config.core.sudoCommand;
+        "@stateDir@" = config.core.stateDir;
+      };
+    in
+    lib.replaceStrings (lib.attrNames replacements) (lib.attrValues replacements) ''
+      #!/usr/bin/env bash
+      # generated with nix-provisioner-script
+      set -o errexit
+      set -o nounset
+      set -o pipefail
 
-    echo "---"
-    echo "Starting provisioning process..."
-    echo "---"
+      echo "---"
+      echo "Starting provisioning process..."
+      echo "---"
 
-    (
-      echo "Preparing provisioning state directory..."
-      @sudo@ mkdir -p "@stateDir@"
-      @sudo@ mkdir -p "@stateDir@/generations"
+      (
+        echo "Preparing provisioning state directory..."
+        @sudo@ mkdir -p "@stateDir@"
+        @sudo@ mkdir -p "@stateDir@/generations"
 
-      echo "Finding the latest generation..."
-      latestGeneration="$(ls -1 "@stateDir@/generations" | sort -n | tail -n 1)"
-    )
+        echo "Finding the latest generation..."
+        latestGeneration="$(ls -1 "@stateDir@/generations" | sort -n | tail -n 1)"
 
-    echo "---"
-    echo "Provisioning script complete!"
-    echo "---"
-  '';
+        currentGeneration=$((latestGeneration + 1))
+
+        echo "Current generation: #$currentGeneration"
+      )
+
+      echo "---"
+      echo "Provisioning script complete!"
+      echo "---"
+    '';
 }
