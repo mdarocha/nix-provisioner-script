@@ -52,7 +52,7 @@
           inherit (lib.lists) map;
           inherit (lib.strings) removePrefix;
 
-          revision = if lib.hasAttr "rev" self then self.rev else "main";
+          revision = "main";
         in
         (pkgs.nixosOptionsDoc {
           options = (lib.modules.evalModules {
