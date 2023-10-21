@@ -17,7 +17,7 @@ jobs:
           nix_path: nixpkgs=channel:nixpkgs-unstable
 
       - name: Update docs/options.md
-        run: nix run .#docs && cat ./result > docs/options.md
+        run: nix build .#docs && cat ./result > docs/options.md
 
       - name: Commit the changed files
         uses: EndBug/add-and-commit@v9
