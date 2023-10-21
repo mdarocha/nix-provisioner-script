@@ -45,53 +45,62 @@
       nixpkgs.lib.genAttrs (import systems) (system: tests system);
 
     packages = nixpkgs.lib.genAttrs (import systems) (system: {
-      docs = let
-        pkgs = nixpkgs.legacyPackages.${system};
-        lib = pkgs.lib;
-        inherit (lib.lists) map;
-        inherit (lib.strings) removePrefix;
+      docs =
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          lib = pkgs.lib;
+          inherit (lib.lists) map;
+          inherit (lib.strings) removePrefix;
 
-        revision = if lib.hasAttr "rev" self then self.rev else "main";
-      in (pkgs.nixosOptionsDoc {
-        options = (lib.modules.evalModules {
-          modules = import ./modules/module-list.nix;
-        }).options // { "_module" = {}; };
-        inherit revision;
-        transformOptions = option: option // {
-          declarations = map (path: let
-            path' = removePrefix "${self}" path;
-          in {
-            name = ".${path'}";
-            url = "https://github.com/mdarocha/nix-provisioner-script/tree/${revision}/${path'}";
-          }) option.declarations;
-        };
-      }).optionsCommonMark;
+          revision = if lib.hasAttr "rev" self then self.rev else "main";
+        in
+        (pkgs.nixosOptionsDoc {
+          options = (lib.modules.evalModules {
+            modules = import ./modules/module-list.nix;
+          }).options // { "_module" = { }; };
+          inherit revision;
+          transformOptions = option: option // {
+            declarations = map
+              (path:
+                let
+                  path' = removePrefix "${self}/" path;
+                in
+                {
+                  name = "./${path'}";
+                  url = "https://github.com/mdarocha/nix-provisioner-script/tree/${revision}/${path'}";
+                })
+              option.declarations;
+          };
+        }).optionsCommonMark;
     });
 
-    apps = 
+    apps =
       let
-        runInDocker = system: let
-          pkgs = nixpkgs.legacyPackages.${system};
-          inherit (pkgs.lib) mapAttrs concatStringsSep mapAttrsToList;
+        runInDocker = system:
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+            inherit (pkgs.lib) mapAttrs concatStringsSep mapAttrsToList;
 
-          tests = import ./tests;
-          provisioners = mapAttrs (name: value: pkgs.writeScript "provisioner-script-${name}.sh" (self.lib.provisionerScript {
-            modules = value.modules ++ [{
-              core.sudoCommand = "";
-            }];
-          })) tests;
+            tests = import ./tests;
+            provisioners = mapAttrs
+              (name: value: pkgs.writeScript "provisioner-script-${name}.sh" (self.lib.provisionerScript {
+                modules = value.modules ++ [{
+                  core.sudoCommand = "";
+                }];
+              }))
+              tests;
 
-          container = "debian@sha256:7d3e8810c96a6a278c218eb8e7f01efaec9d65f50c54aae37421dc3cbeba6535";
-          script = pkgs.writeShellScript "run-in-docker.sh" ''
-            docker run \
-              --rm \
-              ${concatStringsSep "\n" (mapAttrsToList (name: value: "-v ${value}:/provisioner-${name}.sh \\") provisioners)}
-              -it \
-              ${container} \
-              bash -c "''${1:-bash}"
-          '';
-        in
-        { type = "app"; program = "${script}"; };
+            container = "debian@sha256:7d3e8810c96a6a278c218eb8e7f01efaec9d65f50c54aae37421dc3cbeba6535";
+            script = pkgs.writeShellScript "run-in-docker.sh" ''
+              docker run \
+                --rm \
+                ${concatStringsSep "\n" (mapAttrsToList (name: value: "-v ${value}:/provisioner-${name}.sh \\") provisioners)}
+                -it \
+                ${container} \
+                bash -c "''${1:-bash}"
+            '';
+          in
+          { type = "app"; program = "${script}"; };
       in
       nixpkgs.lib.genAttrs (import systems) (system: { run-in-docker = runInDocker system; });
 

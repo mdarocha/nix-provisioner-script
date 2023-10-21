@@ -2,21 +2,22 @@
 
 let
   inherit (lib) mkOption types;
-  scriptPart = let
-    inherit (types) attrsOf listOf either str submodule lines;
-    scriptWithDeps = {
-      deps = mkOption {
-        type = listOf str;
-        default = [ ];
-        description = "List of dependencies. This script fragment will run after these.";
+  scriptPart =
+    let
+      inherit (types) attrsOf listOf either str submodule lines;
+      scriptWithDeps = {
+        deps = mkOption {
+          type = listOf str;
+          default = [ ];
+          description = "List of dependencies. This script fragment will run after these.";
+        };
+        text = mkOption {
+          type = str;
+          description = "The contents of the script fragment.";
+        };
       };
-      text = mkOption {
-        type = str;
-        description = "The contents of the script fragment.";
-      };
-    };
-  in
-  attrsOf (either str (submodule { options = scriptWithDeps; }));
+    in
+    attrsOf (either str (submodule { options = scriptWithDeps; }));
 in
 {
   options.core = {

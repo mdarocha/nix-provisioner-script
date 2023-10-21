@@ -47,85 +47,91 @@ in
       }));
   };
 
-  config = let
-    inherit (lib) attrNames filterAttrs listToAttrs concatStringsSep;
-    inherit (builtins) map length;
-
-    fileNames = attrNames (filterAttrs (n: v: v.enable) cfg);
-  in {
-    core.generationScripts = listToAttrs (map (n:
+  config =
     let
-      file = cfg.${n};
-    in {
-      name = "etc-${n}";
-      value = ''
-        _ensure_dir "$(dirname "$generationDir/files/etc/${file.target}")";
+      inherit (lib) attrNames filterAttrs listToAttrs concatStringsSep;
+      inherit (builtins) map length;
 
-        _log "Generating /etc/${file.target}";
-        cat <<EOF > "$generationDir/files/etc/${file.target}"
-        ${file.text}
-        EOF
-      '';
-    }) fileNames) // {
-      etc-file-list = {
-        deps = map (n: "etc-${n}") fileNames;
-        text = ''
-          _log "Generating etc file list..."
-          cat <<EOF > "$generationDir/etc-file-list"
-          ${concatStringsSep "\n" (map (n: cfg.${n}.target) fileNames)}
-          EOF
-        '';
+      fileNames = attrNames (filterAttrs (n: v: v.enable) cfg);
+    in
+    {
+      core.generationScripts = listToAttrs
+        (map
+          (n:
+            let
+              file = cfg.${n};
+            in
+            {
+              name = "etc-${n}";
+              value = ''
+                _ensure_dir "$(dirname "$generationDir/files/etc/${file.target}")";
+
+                _log "Generating /etc/${file.target}";
+                cat <<EOF > "$generationDir/files/etc/${file.target}"
+                ${file.text}
+                EOF
+              '';
+            })
+          fileNames) // {
+        etc-file-list = {
+          deps = map (n: "etc-${n}") fileNames;
+          text = ''
+            _log "Generating etc file list..."
+            cat <<EOF > "$generationDir/etc-file-list"
+            ${concatStringsSep "\n" (map (n: cfg.${n}.target) fileNames)}
+            EOF
+          '';
+        };
       };
+
+      core.activationScripts.etc = ''
+        _log "Activating etc files..."
+
+        etc_to_create=()
+        etc_to_update=()
+        etc_to_remove=()
+
+        if [ ! -f "$previousGenerationDir/etc-file-list" ]; then
+          while read -r file; do
+            if [[ $file ]]; then
+              etc_to_create+=( "$file" )
+            fi
+          done <<< "$(cat "$generationDir/etc-file-list")"
+        else
+          while read -r file; do
+            if [[ $file ]]; then
+              etc_to_update+=( "$file" )
+            fi
+          done <<< "$(comm -12 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
+
+          while read -r file; do
+            if [[ $file ]]; then
+              etc_to_remove+=( "$file" )
+            fi
+          done <<< "$(comm -23 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
+
+          while read -r file; do
+            if [[ $file ]]; then
+              etc_to_create+=( "$file" )
+            fi
+          done <<< "$(comm -13 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
+        fi
+
+        for file in "''${etc_to_create[@]}"; do
+          _log "Creating $file"
+          _ensure_dir "$(dirname "/etc/$file")"
+          _symlink "$generationDir/files/etc/$file" "/etc/$file"
+        done
+
+        for file in "''${etc_to_update[@]}"; do
+          _log "Updating $file to point to new generation"
+          _symlink "$generationDir/files/etc/$file" "/etc/$file"
+        done
+
+        for file in "''${etc_to_remove[@]}"; do
+          _log "Removing $file"
+          _remove "/etc/$file"
+        done
+      '';
     };
-
-    core.activationScripts.etc = ''
-      _log "Activating etc files..."
-
-      etc_to_create=()
-      etc_to_update=()
-      etc_to_remove=()
-
-      if [ ! -f "$previousGenerationDir/etc-file-list" ]; then
-        while read -r file; do
-          if [[ $file ]]; then
-            etc_to_create+=( "$file" )
-          fi
-        done <<< "$(cat "$generationDir/etc-file-list")"
-      else
-        while read -r file; do
-          if [[ $file ]]; then
-            etc_to_update+=( "$file" )
-          fi
-        done <<< "$(comm -12 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
-
-        while read -r file; do
-          if [[ $file ]]; then
-            etc_to_remove+=( "$file" )
-          fi
-        done <<< "$(comm -23 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
-
-        while read -r file; do
-          if [[ $file ]]; then
-            etc_to_create+=( "$file" )
-          fi
-        done <<< "$(comm -13 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
-      fi
-
-      for file in "''${etc_to_create[@]}"; do
-        _log "Creating $file"
-        _ensure_dir "$(dirname "/etc/$file")"
-        _symlink "$generationDir/files/etc/$file" "/etc/$file"
-      done
-
-      for file in "''${etc_to_update[@]}"; do
-        _log "Updating $file to point to new generation"
-        _symlink "$generationDir/files/etc/$file" "/etc/$file"
-      done
-
-      for file in "''${etc_to_remove[@]}"; do
-        _log "Removing $file"
-        _remove "/etc/$file"
-      done
-    '';
-  };
 }

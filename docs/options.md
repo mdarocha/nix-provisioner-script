@@ -14,7 +14,7 @@ attribute set of (string or (submodule))
 ` { } `
 
 *Declared by:*
- - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/core/script.nix)
+ - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/core/script.nix)
 
 
 
@@ -30,7 +30,7 @@ The final generated provisioning script\.
 string *(read only)*
 
 *Declared by:*
- - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/core/script.nix)
+ - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/core/script.nix)
 
 
 
@@ -53,7 +53,7 @@ attribute set of (string or (submodule))
 ` { } `
 
 *Declared by:*
- - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/core/script.nix)
+ - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/core/script.nix)
 
 
 
@@ -74,7 +74,7 @@ string
 ` "/var/lib/nix-provisioner-script" `
 
 *Declared by:*
- - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/core/script.nix)
+ - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/core/script.nix)
 
 
 
@@ -95,7 +95,7 @@ string
 ` "sudo" `
 
 *Declared by:*
- - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/core/script.nix)
+ - [\./modules/core/script\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/core/script.nix)
 
 
 
@@ -127,7 +127,7 @@ attribute set of (submodule)
 ```
 
 *Declared by:*
- - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/environment/etc.nix)
+ - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/etc.nix)
 
 
 
@@ -149,7 +149,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/environment/etc.nix)
+ - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/etc.nix)
 
 
 
@@ -171,7 +171,7 @@ string
 ` "‹name›" `
 
 *Declared by:*
- - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/environment/etc.nix)
+ - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/etc.nix)
 
 
 
@@ -187,6 +187,6 @@ Text of the file\.
 string
 
 *Declared by:*
- - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main//modules/environment/etc.nix)
+ - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/etc.nix)
 
 
