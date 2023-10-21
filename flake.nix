@@ -44,19 +44,29 @@
       in
       nixpkgs.lib.genAttrs (import systems) (system: tests system);
 
-    packages =
-      let
-        tests = import ./tests;
-        testScripts = system: nixpkgs.lib.mapAttrs'
-          (name: value: {
-            name = "test-script-${name}";
-            value = nixpkgs.legacyPackages.${system}.writeScript "provisioner-script-${name}.sh" (self.lib.provisionerScript {
-              modules = value.modules;
-            });
-          })
-          tests;
-      in
-      nixpkgs.lib.genAttrs (import systems) (system: testScripts system);
+    packages = nixpkgs.lib.genAttrs (import systems) (system: {
+      docs = let
+        pkgs = nixpkgs.legacyPackages.${system};
+        lib = pkgs.lib;
+        inherit (lib.lists) map;
+        inherit (lib.strings) removePrefix;
+
+        revision = if lib.hasAttr "rev" self then self.rev else "main";
+      in (pkgs.nixosOptionsDoc {
+        options = (lib.modules.evalModules {
+          modules = import ./modules/module-list.nix;
+        }).options;
+        inherit revision;
+        transformOptions = option: option // {
+          declarations = map (path: let
+            path' = removePrefix "${self}" path;
+          in {
+            name = ".${path'}";
+            url = "https://github.com/mdarocha/nix-provisioner-script/tree/${revision}/${path'}";
+          }) option.declarations;
+        };
+      }).optionsCommonMark;
+    });
 
     apps = 
       let
@@ -78,7 +88,7 @@
               ${concatStringsSep "\n" (mapAttrsToList (name: value: "-v ${value}:/provisioner-${name}.sh \\") provisioners)}
               -it \
               ${container} \
-              bash
+              bash -c "''${1:-bash}"
           '';
         in
         { type = "app"; program = "${script}"; };
