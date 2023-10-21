@@ -75,20 +75,25 @@ in
         "@stateDir@" = config.core.stateDir;
       };
 
-      wrapScriptPart = name: part: part // {
+      wrapScriptPart = name: type: part: part // {
         text = ''
-          _log "Running generation part ${name}..."
+          _log "Running ${type} part ${name}..."
           {
           ${part.text}
           }
-          _log "Finished generation part ${name}"
+          _log "Finished ${type} part ${name}"
         '';
       };
 
       generationScripts = config.core.generationScripts;
       generationScript = textClosureMap id
-        (mapAttrs (n: v: wrapScriptPart n (if isString v then noDepEntry v else v)) generationScripts)
+        (mapAttrs (n: v: wrapScriptPart n "generation" (if isString v then noDepEntry v else v)) generationScripts)
         (attrNames generationScripts);
+
+      activationScripts = config.core.activationScripts;
+      activationScript = textClosureMap id
+        (mapAttrs (n: v: wrapScriptPart n "activation" (if isString v then noDepEntry v else v)) activationScripts)
+        (attrNames activationScripts);
     in
     lib.replaceStrings (lib.attrNames replacements) (lib.attrValues replacements) ''
       #!/usr/bin/env bash
@@ -113,13 +118,20 @@ in
         currentGeneration=$((latestGeneration + 1))
         _log "Previous generation: #''${latestGeneration:-0}, current generation: #$currentGeneration"
 
+        previousGenerationDir="@stateDir@/generations/$latestGeneration"
         generationDir="@stateDir@/generations/$currentGeneration"
         _ensure_dir "$generationDir"
+
+        @sudo@ cp "$0" "$generationDir/provisioner.sh"
       }
 
       _log_big "Running generation scripts..."
       ${generationScript}
       _log_big "Finished generation scripts."
+
+      _log_big "Running activation scripts..."
+      ${activationScript}
+      _log_big "Finished activation scripts."
 
       _log_big "Provisioning script complete!"
     '';
