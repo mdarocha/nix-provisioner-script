@@ -55,7 +55,7 @@
       in (pkgs.nixosOptionsDoc {
         options = (lib.modules.evalModules {
           modules = import ./modules/module-list.nix;
-        }).options;
+        }).options // { "_module" = {}; };
         inherit revision;
         transformOptions = option: option // {
           declarations = map (path: let
