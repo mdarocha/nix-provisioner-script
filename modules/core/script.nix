@@ -105,6 +105,8 @@ in
 
       ${builtins.readFile ./lib.sh}
 
+      LC_ALL=C
+
       _log_big "Starting provisioning process..."
 
       {
