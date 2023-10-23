@@ -67,7 +67,7 @@ in
                 _ensure_dir "$(dirname "$generationDir/files/etc/${file.target}")";
 
                 _log "Generating /etc/${file.target}";
-                cat <<EOF > "$generationDir/files/etc/${file.target}"
+                @sudo@ tee "$generationDir/files/etc/${file.target}" > /dev/null <<EOF
                 ${file.text}
                 EOF
               '';
@@ -77,7 +77,7 @@ in
           deps = map (n: "etc-${n}") fileNames;
           text = ''
             _log "Generating etc file list..."
-            cat <<EOF > "$generationDir/etc-file-list"
+            @sudo@ tee "$generationDir/etc-file-list" > /dev/null <<EOF
             ${concatStringsSep "\n" (map (n: cfg.${n}.target) fileNames)}
             EOF
           '';

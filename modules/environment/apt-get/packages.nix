@@ -67,7 +67,7 @@ in
   config = {
     core.generationScripts.apt-get-packages = ''
       _log "Generating apt-get package list...";
-      cat <<EOF > "$generationDir/apt-get-package-list"
+      @sudo@ tee "$generationDir/apt-get-package-list" > /dev/null <<EOF
       ${lib.concatStringsSep "\n" cfg.packages}
       EOF
     '';
