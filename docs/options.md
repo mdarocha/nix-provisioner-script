@@ -99,6 +99,204 @@ string
 
 
 
+## environment\.apt-get\.packages
+
+
+
+Packages to install using apt-get\.
+Note that this is not a list of derivations, but a list of package names
+that can be installed using ` apt-get install `\.
+
+
+
+*Type:*
+list of string
+
+
+
+*Default:*
+` [ ] `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
+## environment\.apt-get\.additionalOptions\.all
+
+
+
+Additional options passed to every ` apt-get ` invocation\.
+These are passed as ` -o <key>=<value> `
+
+
+
+*Type:*
+attribute set of string
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  "DPkg::Lock::Timeout" = "60";
+}
+```
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
+## environment\.apt-get\.additionalOptions\.install
+
+
+
+Additional options passed to every ` apt-get install ` invocation\.
+These are passed as ` -o <key>=<value> `
+
+
+
+*Type:*
+attribute set of string
+
+
+
+*Default:*
+
+```
+{
+  "DPkg::Options::" = "--force-confdef";
+}
+```
+
+
+
+*Example:*
+
+```
+{
+  "DPkg::Lock::Timeout" = "60";
+}
+```
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
+## environment\.apt-get\.additionalOptions\.remove
+
+
+
+Additional options passed to every ` apt-get remove ` invocation\.
+These are passed as ` -o <key>=<value> `
+
+
+
+*Type:*
+attribute set of string
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  "DPkg::Lock::Timeout" = "60";
+}
+```
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
+## environment\.apt-get\.additionalOptions\.update
+
+
+
+Additional options passed to every ` apt-get update ` invocation\.
+These are passed as ` -o <key>=<value> `
+
+
+
+*Type:*
+attribute set of string
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  "DPkg::Lock::Timeout" = "60";
+}
+```
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
+## environment\.apt-get\.runAutoremove
+
+
+
+Whether apt-get autoremove should be run after the installation\.
+
+
+
+*Type:*
+boolean
+
+
+
+*Default:*
+` true `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
+## environment\.apt-get\.runUpdate
+
+
+
+Whether apt-get update should be run before installing packages\.
+
+
+
+*Type:*
+boolean
+
+
+
+*Default:*
+` true `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
 ## environment\.etc
 
 
