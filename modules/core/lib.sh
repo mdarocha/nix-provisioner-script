@@ -33,3 +33,58 @@ function _remove() {
     fi
     @sudo@ rm -rf "$1"
 }
+
+function _diff_to_create() {
+    file="$1"
+
+    result=()
+
+    if [ ! -f "$previousGenerationDir/$file" ]; then
+      while read -r item; do
+        if [[ $item ]]; then
+          result+=( "$item" )
+        fi
+      done <<< "$(cat "$generationDir/$file")"
+    else
+      while read -r item; do
+        if [[ $item ]]; then
+          result+=( "$item" )
+        fi
+      done <<< "$(comm -13 <(sort "$previousGenerationDir/$file") <(sort "$generationDir/$file"))"
+
+    fi
+
+    echo "${result[@]}"
+}
+
+function _diff_to_update() {
+    file="$1"
+
+    result=()
+
+    if [ -f "$previousGenerationDir/$file" ]; then
+      while read -r item; do
+        if [[ $item ]]; then
+          result+=( "$item" )
+        fi
+      done <<< "$(comm -12 <(sort "$previousGenerationDir/$file") <(sort "$generationDir/$file"))"
+    fi
+
+    echo "${result[@]}"
+}
+
+function _diff_to_remove() {
+    file="$1"
+
+    result=()
+
+    if [ -f "$previousGenerationDir/$file" ]; then
+      while read -r item; do
+        if [[ $item ]]; then
+          result+=( "$item" )
+        fi
+      done <<< "$(comm -23 <(sort "$previousGenerationDir/$file") <(sort "$generationDir/$file"))"
+    fi
+
+    echo "${result[@]}"
+}

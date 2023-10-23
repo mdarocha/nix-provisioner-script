@@ -67,45 +67,18 @@ in
         mkAdditionalOptions = options: lib.concatStringsSep " "
           (lib.mapAttrsToList (name: value: "-o ${name}=${value}") (cfg.additionalOptions.all // options));
 
-        packageTest = "dpkg-query -W -f='\${Status}' \"$package\" 2>/dev/null | grep \"ok installed\"";
+        packageTest = "dpkg-query -W -f='\${Status}' \"$package\" 2>/dev/null | grep \"ok installed\" >/dev/null";
       in
       {
         deps = [ ];
         text = ''
-          apt_get_to_install=()
-          apt_get_to_uninstall=()
-
-          if [ ! -f "$previousGenerationDir/apt-get-package-list" ]; then
-            while read -r package; do
-              apt_get_to_install+=( "$package" )
-            done <<< "$(cat "$generationDir/apt-get-package-list")"
-          else
-            while read -r package; do
-              if [[ $package ]]; then
-                apt_get_to_install+=( "$package" )
-              fi
-            done <<< "$(comm -12 <(sort "$previousGenerationDir/apt-get-package-list") <(sort "$generationDir/apt-get-package-list"))"
-
-            while read -r package; do
-              if [[ $package ]]; then
-                apt_get_to_install+=( "$package" )
-              fi
-            done <<< "$(comm -13 <(sort "$previousGenerationDir/apt-get-package-list") <(sort "$generationDir/apt-get-package-list"))"
-
-            while read -r package; do
-              if [[ $package ]]; then
-                apt_get_to_uninstall+=( "$package" )
-              fi
-            done <<< "$(comm -23 <(sort "$previousGenerationDir/apt-get-package-list") <(sort "$generationDir/apt-get-package-list"))"
-          fi
-
           ${lib.optionalString (cfg.runUpdate && lib.length cfg.packages > 0) ''
             _log "Running apt-get update..."
             @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.update} update
           ''}
 
           _log "Ensuring all required packages are installed..."
-          for package in "''${apt_get_to_install[@]}"; do
+          for package in $(_diff_to_create "apt-get-package-list") $(_diff_to_update "apt-get-package-list"); do
             if ${packageTest}; then
               _log "$package is already installed"
             else
@@ -115,7 +88,7 @@ in
           done
 
           _log "Ensuring all removed packages are uninstalled..."
-          for package in "''${apt_get_to_uninstall[@]}"; do
+          for package in $(_diff_to_remove "apt-get-package-list"); do
             if ${packageTest}; then
               _log "Removing package $package..."
               @sudo@ DEBIAN_FRONTEND=noninteractive apt-get ${mkAdditionalOptions cfg.additionalOptions.remove} remove -yq "$package"

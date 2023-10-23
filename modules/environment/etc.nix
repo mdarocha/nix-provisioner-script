@@ -87,48 +87,18 @@ in
       core.activationScripts.etc = ''
         _log "Activating etc files..."
 
-        etc_to_create=()
-        etc_to_update=()
-        etc_to_remove=()
-
-        if [ ! -f "$previousGenerationDir/etc-file-list" ]; then
-          while read -r file; do
-            if [[ $file ]]; then
-              etc_to_create+=( "$file" )
-            fi
-          done <<< "$(cat "$generationDir/etc-file-list")"
-        else
-          while read -r file; do
-            if [[ $file ]]; then
-              etc_to_update+=( "$file" )
-            fi
-          done <<< "$(comm -12 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
-
-          while read -r file; do
-            if [[ $file ]]; then
-              etc_to_remove+=( "$file" )
-            fi
-          done <<< "$(comm -23 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
-
-          while read -r file; do
-            if [[ $file ]]; then
-              etc_to_create+=( "$file" )
-            fi
-          done <<< "$(comm -13 <(sort "$previousGenerationDir/etc-file-list") <(sort "$generationDir/etc-file-list"))"
-        fi
-
-        for file in "''${etc_to_create[@]}"; do
+        for file in $(_diff_to_create "etc-file-list"); do
           _log "Creating $file"
           _ensure_dir "$(dirname "/etc/$file")"
           _symlink "$generationDir/files/etc/$file" "/etc/$file"
         done
 
-        for file in "''${etc_to_update[@]}"; do
+        for file in $(_diff_to_update "etc-file-list"); do
           _log "Updating $file to point to new generation"
           _symlink "$generationDir/files/etc/$file" "/etc/$file"
         done
 
-        for file in "''${etc_to_remove[@]}"; do
+        for file in $(_diff_to_remove "etc-file-list"); do
           _log "Removing $file"
           _remove "/etc/$file"
         done
