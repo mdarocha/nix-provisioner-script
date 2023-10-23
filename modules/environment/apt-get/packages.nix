@@ -30,6 +30,16 @@ in
         Whether apt-get autoremove should be run after the installation.
       '';
     };
+    installCaCertificates = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Whether the `ca-certificates` package should be installed first before
+        attempting any other apt operations.
+        This package is often required by external sources and without it, installation
+        will fail.
+      '';
+    };
     additionalOptions =
       let
         mkAdditionalOptionsOption = invocation: default: mkOption {
@@ -64,15 +74,27 @@ in
 
     core.activationScripts.apt-get-packages =
       let
-        mkAdditionalOptions = options: lib.concatStringsSep " "
+        inherit (lib) concatStringsSep optionalString length;
+        mkAdditionalOptions = options: concatStringsSep " "
           (lib.mapAttrsToList (name: value: "-o ${name}=${value}") (cfg.additionalOptions.all // options));
 
         packageTest = "dpkg-query -W -f='\${Status}' \"$package\" 2>/dev/null | grep \"ok installed\" >/dev/null";
       in
       {
-        deps = [ ];
+        deps = [ "etc" ]; # sources are setup in the etc part
         text = ''
-          ${lib.optionalString (cfg.runUpdate && lib.length cfg.packages > 0) ''
+          ${optionalString cfg.installCaCertificates ''
+            _log "Installing ca-certificates..."
+
+            ${optionalString cfg.runUpdate ''
+              _log "Running apt-get update..."
+              @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.update} update
+            ''}
+
+            @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.install} install -yq ca-certificates
+          ''}
+
+          ${optionalString (cfg.runUpdate && lib.length cfg.packages > 0) ''
             _log "Running apt-get update..."
             @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.update} update
           ''}

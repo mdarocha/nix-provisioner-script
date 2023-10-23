@@ -106,6 +106,7 @@ in
       ${builtins.readFile ./lib.sh}
 
       LC_ALL=C
+      source /etc/os-release
 
       _log_big "Starting provisioning process..."
 
