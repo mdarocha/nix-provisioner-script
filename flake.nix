@@ -92,7 +92,7 @@
 
             container = "debian@sha256:7d3e8810c96a6a278c218eb8e7f01efaec9d65f50c54aae37421dc3cbeba6535";
             script = pkgs.writeShellScript "run-in-docker.sh" ''
-              docker run \
+              ${pkgs.docker-client}/bin/docker run \
                 --rm \
                 ${concatStringsSep "\n" (mapAttrsToList (name: value: "-v ${value}:/provisioner-${name}.sh \\") provisioners)}
                 -it \
@@ -101,8 +101,43 @@
             '';
           in
           { type = "app"; program = "${script}"; };
+        runInVagrant = system:
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+            inherit (pkgs.lib) mapAttrs concatStringsSep mapAttrsToList;
+
+            tests = import ./tests;
+            provisioners = mapAttrs
+              (name: value: pkgs.writeScript "provisioner-script-${name}.sh" (self.lib.provisionerScript {
+                modules = value.modules ++ [];
+              }))
+              tests;
+
+            vagrantfile = pkgs.writeText "vagrantfile" ''
+              Vagrant.configure("2") do |config|
+                config.vm.box = "generic/debian12"
+              end
+            '';
+
+            script = pkgs.writeShellScript "run-in-vagrant.sh" ''
+              tmp="$(mktemp -d)"
+              trap "rm -rf $tmp" EXI
+              T
+              pushd $tmp > /dev/null
+
+              cp ${vagrantfile} Vagrantfile
+
+              ${pkgs.vagrant}/bin/vagrant up
+
+              popd $tmp > /dev/null
+            '';
+          in
+          { type = "app"; program = "${script}"; };
       in
-      nixpkgs.lib.genAttrs (import systems) (system: { run-in-docker = runInDocker system; });
+      nixpkgs.lib.genAttrs (import systems) (system: {
+        run-in-docker = runInDocker system;
+        run-in-vagrant = runInVagrant system;
+      });
 
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
   };
