@@ -255,6 +255,30 @@ attribute set of string
 
 
 
+## environment\.apt-get\.installCaCertificates
+
+
+
+Whether the ` ca-certificates ` package should be installed first before
+attempting any other apt operations\.
+This package is often required by external sources and without it, installation
+will fail\.
+
+
+
+*Type:*
+boolean
+
+
+
+*Default:*
+` true `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
 ## environment\.apt-get\.runAutoremove
 
 
@@ -294,6 +318,125 @@ boolean
 
 *Declared by:*
  - [\./modules/environment/apt-get/packages\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/packages.nix)
+
+
+
+## environment\.apt-get\.sources
+
+
+
+Additional sources to add to /etc/apt/sources\.list\.d
+See the manpage (https://manpages\.ubuntu\.com/manpages/lunar/en/man5/sources\.list\.5\.html) for information about
+the sources format\. This option generates files in the deb882 format\.
+
+
+
+*Type:*
+attribute set of (submodule)
+
+
+
+*Default:*
+` { } `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/sources\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/sources.nix)
+
+
+
+## environment\.apt-get\.sources\.\<name>\.components
+
+
+
+Components of the source\.
+
+
+
+*Type:*
+list of string
+
+
+
+*Default:*
+` [ ] `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/sources\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/sources.nix)
+
+
+
+## environment\.apt-get\.sources\.\<name>\.options
+
+
+
+Any additional options for the source, which will be added to the file
+in deb882 format\.
+
+
+
+*Type:*
+attribute set of string
+
+
+
+*Default:*
+` { } `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/sources\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/sources.nix)
+
+
+
+## environment\.apt-get\.sources\.\<name>\.signature
+
+
+
+The GPG signature of the source, in plain text format\.
+
+
+
+*Type:*
+null or string
+
+
+
+*Default:*
+` null `
+
+*Declared by:*
+ - [\./modules/environment/apt-get/sources\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/sources.nix)
+
+
+
+## environment\.apt-get\.sources\.\<name>\.suites
+
+
+
+Suite names of the source\.
+
+
+
+*Type:*
+list of string
+
+*Declared by:*
+ - [\./modules/environment/apt-get/sources\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/sources.nix)
+
+
+
+## environment\.apt-get\.sources\.\<name>\.uris
+
+
+
+URIs of the source\.
+
+
+
+*Type:*
+list of string
+
+*Declared by:*
+ - [\./modules/environment/apt-get/sources\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/apt-get/sources.nix)
 
 
 
