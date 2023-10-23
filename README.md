@@ -31,3 +31,4 @@ Hovewer, it should support any debian-based distro that uses `apt`.
 | `environment.apt-get` | Manages packages using `apt-get` and `apt` sources | ✅ Done |
 | `systemd.services` | Manages systemd services | 🔨 TODO |
 | `systemd.service-overrides` | Similar to `systemd.services`, but manages overrides of exisiting services (like those installed by packages) | 🔨 TODO |
+| `users.users` | Manages users | 🔨 TODO |
