@@ -2,7 +2,7 @@
 
 This project provides means to generate pure Bash provisioning scripts using
 the powerful Nix module system. This allows managing the configuration of remote systems 
-hat aren't running NixOS for various reasons. Those systems don't need to have Nix
+that aren't running NixOS for various reasons. Those systems don't need to have Nix
 or anything else installed other than what comes in a default installation.
 
 The provided modules try to mirror NixOS systems where possible, for easy porting.
