@@ -104,32 +104,44 @@
         runInVagrant = system:
           let
             pkgs = nixpkgs.legacyPackages.${system};
-            inherit (pkgs.lib) mapAttrs concatStringsSep mapAttrsToList;
+            inherit (pkgs.lib) concatStringsSep mapAttrsToList;
 
             tests = import ./tests;
-            provisioners = mapAttrs
-              (name: value: pkgs.writeScript "provisioner-script-${name}.sh" (self.lib.provisionerScript {
-                modules = value.modules ++ [];
-              }))
-              tests;
+            provisioners = pkgs.linkFarm "provisioners" (mapAttrsToList
+              (name: value: {
+                inherit name;
+                path = pkgs.writeScript "provisioner-script-${name}.sh" (self.lib.provisionerScript {
+                  modules = value.modules ++ [];
+                });
+              })
+              tests);
 
             vagrantfile = pkgs.writeText "vagrantfile" ''
               Vagrant.configure("2") do |config|
                 config.vm.box = "generic/debian12"
+                config.vm.box_version = "4.3.2"
+                config.vm.synced_folder "${provisioners}", "/provisioners", type: "rsync",
+                  rsync_args: [ "--chmod=ugo+rx" ]
               end
             '';
 
             script = pkgs.writeShellScript "run-in-vagrant.sh" ''
+              PATH="${pkgs.vagrant}/bin:${pkgs.rsync}/bin:$PATH"
+
               tmp="$(mktemp -d)"
-              trap "rm -rf $tmp" EXI
-              T
+              trap "rm -rf $tmp" EXIT
+
               pushd $tmp > /dev/null
 
               cp ${vagrantfile} Vagrantfile
 
-              ${pkgs.vagrant}/bin/vagrant up
+              vagrant up
 
-              popd $tmp > /dev/null
+              vagrant ssh
+
+              vagrant destroy -f
+
+              popd > /dev/null
             '';
           in
           { type = "app"; program = "${script}"; };
