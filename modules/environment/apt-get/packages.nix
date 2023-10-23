@@ -78,20 +78,24 @@ in
         mkAdditionalOptions = options: concatStringsSep " "
           (lib.mapAttrsToList (name: value: "-o ${name}=${value}") (cfg.additionalOptions.all // options));
 
-        packageTest = "dpkg-query -W -f='\${Status}' \"$package\" 2>/dev/null | grep \"ok installed\" >/dev/null";
+        packageTest = package: "dpkg-query -W -f='\${Status}' \"${package}\" 2>/dev/null | grep \"ok installed\" >/dev/null";
       in
       {
         deps = [ "etc" ]; # sources are setup in the etc part
         text = ''
           ${optionalString cfg.installCaCertificates ''
-            _log "Installing ca-certificates..."
+            if ${packageTest "ca-certificates"}; then
+              _log "ca-certificates is already installed"
+            else
+              _log "Installing ca-certificates..."
 
-            ${optionalString cfg.runUpdate ''
-              _log "Running apt-get update..."
-              @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.update} update
-            ''}
+              ${optionalString cfg.runUpdate ''
+                _log "Running apt-get update..."
+                @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.update} update
+              ''}
 
-            @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.install} install -yq ca-certificates
+              @sudo@ apt-get ${mkAdditionalOptions cfg.additionalOptions.install} install -yq ca-certificates
+            fi
           ''}
 
           ${optionalString (cfg.runUpdate && lib.length cfg.packages > 0) ''
@@ -101,7 +105,7 @@ in
 
           _log "Ensuring all required packages are installed..."
           for package in $(_diff_to_create "apt-get-package-list") $(_diff_to_update "apt-get-package-list"); do
-            if ${packageTest}; then
+            if ${packageTest "$package"}; then
               _log "$package is already installed"
             else
               _log "Installing package $package..."
@@ -111,7 +115,7 @@ in
 
           _log "Ensuring all removed packages are uninstalled..."
           for package in $(_diff_to_remove "apt-get-package-list"); do
-            if ${packageTest}; then
+            if ${packageTest "$package"}; then
               _log "Removing package $package..."
               @sudo@ DEBIAN_FRONTEND=noninteractive apt-get ${mkAdditionalOptions cfg.additionalOptions.remove} remove -yq "$package"
             else
