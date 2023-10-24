@@ -531,3 +531,744 @@ string
  - [\./modules/environment/etc\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/environment/etc.nix)
 
 
+
+## systemd\.override\.automounts
+
+
+
+Definition of systemd automount unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.automount(5) `](https://www.freedesktop.org/software/systemd/man/systemd.automount.html)\.
+
+
+
+*Type:*
+systemd automount unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  automount-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Automount = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.override\.mounts
+
+
+
+Definition of systemd mount unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.mount(5) `](https://www.freedesktop.org/software/systemd/man/systemd.mount.html)\.
+
+
+
+*Type:*
+systemd mount unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  mount-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Mount = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.override\.paths
+
+
+
+Definition of systemd path unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.path(5) `](https://www.freedesktop.org/software/systemd/man/systemd.path.html)\.
+
+
+
+*Type:*
+systemd path unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  path-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Path = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.override\.services
+
+
+
+Definition of systemd service unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.service(5) `](https://www.freedesktop.org/software/systemd/man/systemd.service.html)\.
+
+
+
+*Type:*
+systemd service unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  service-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Service = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.override\.slices
+
+
+
+Definition of systemd slice unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.slice(5) `](https://www.freedesktop.org/software/systemd/man/systemd.slice.html)\.
+
+
+
+*Type:*
+systemd slice unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  slice-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Slice = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.override\.sockets
+
+
+
+Definition of systemd socket unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.socket(5) `](https://www.freedesktop.org/software/systemd/man/systemd.socket.html)\.
+
+
+
+*Type:*
+systemd socket unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  socket-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Socket = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.override\.targets
+
+
+
+Definition of systemd target unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+` systemd.target(5) `\.
+
+
+
+*Type:*
+systemd target unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  target-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Target = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.override\.timers
+
+
+
+Definition of systemd timer unit overrides\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.timer(5) `](https://www.freedesktop.org/software/systemd/man/systemd.timer.html)\.
+
+
+
+*Type:*
+systemd timer unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  timer-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Timer = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.automounts
+
+
+
+Definition of systemd automount units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.automount(5) `](https://www.freedesktop.org/software/systemd/man/systemd.automount.html)\.
+
+
+
+*Type:*
+systemd automount unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  automount-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Automount = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.mounts
+
+
+
+Definition of systemd mount units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.mount(5) `](https://www.freedesktop.org/software/systemd/man/systemd.mount.html)\.
+
+
+
+*Type:*
+systemd mount unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  mount-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Mount = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.paths
+
+
+
+Definition of systemd path units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.path(5) `](https://www.freedesktop.org/software/systemd/man/systemd.path.html)\.
+
+
+
+*Type:*
+systemd path unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  path-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Path = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.services
+
+
+
+Definition of systemd service units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.service(5) `](https://www.freedesktop.org/software/systemd/man/systemd.service.html)\.
+
+
+
+*Type:*
+systemd service unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  service-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Service = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.slices
+
+
+
+Definition of systemd slice units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.slice(5) `](https://www.freedesktop.org/software/systemd/man/systemd.slice.html)\.
+
+
+
+*Type:*
+systemd slice unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  slice-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Slice = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.sockets
+
+
+
+Definition of systemd socket units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.socket(5) `](https://www.freedesktop.org/software/systemd/man/systemd.socket.html)\.
+
+
+
+*Type:*
+systemd socket unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  socket-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Socket = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.targets
+
+
+
+Definition of systemd target units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+` systemd.target(5) `\.
+
+
+
+*Type:*
+systemd target unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  target-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Target = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.system\.timers
+
+
+
+Definition of systemd timer units\.
+
+Note that the attributes follow the capitalization and naming used
+by systemd\. More details can be found in
+[` systemd.timer(5) `](https://www.freedesktop.org/software/systemd/man/systemd.timer.html)\.
+
+
+
+*Type:*
+systemd timer unit configuration
+
+
+
+*Default:*
+` { } `
+
+
+
+*Example:*
+
+```
+{
+  timer-name = {
+    Unit = {
+      Description = "Example description";
+      Documentation = [ "man:example(1)" "man:example(5)" ];
+    };
+
+    Timer = {
+      …
+    };
+  };
+};
+
+```
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
+
+## systemd\.systemctlCommand
+
+
+
+Configures the path of the ` systemctl ` tool used to interact with systemd\.
+
+
+
+*Type:*
+string
+
+
+
+*Default:*
+` "systemctl" `
+
+*Declared by:*
+ - [\./modules/systemd/default\.nix](https://github.com/mdarocha/nix-provisioner-script/tree/main/modules/systemd/default.nix)
+
+
