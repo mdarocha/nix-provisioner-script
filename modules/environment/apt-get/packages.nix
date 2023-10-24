@@ -72,6 +72,7 @@ in
       EOF
     '';
 
+    # TODO add logic to *not* remove packages that were installed by default on the system
     core.activationScripts.apt-get-packages =
       let
         inherit (lib) concatStringsSep optionalString length;

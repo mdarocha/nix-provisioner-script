@@ -5,8 +5,6 @@ the powerful Nix module system. This allows managing the configuration of remote
 that aren't running NixOS for various reasons. Those systems don't need to have Nix
 or anything else installed other than what comes in a default installation.
 
-The provided modules try to mirror NixOS systems where possible, for easy porting.
-
 The generated script supports declarative management and rollbacks.
 It creates a directory under `/var/lib/nix-provisioner-script` with all the state data that is
 managed by the script. When running the generated script, a new generated is created, compared to the
@@ -29,6 +27,5 @@ Hovewer, it should support any debian-based distro that uses `apt`.
 | --- | --- | --- |
 | `environment.etc` | Manages files under `/etc/` | ✅ Done |
 | `environment.apt-get` | Manages packages using `apt-get` and `apt` sources | ✅ Done |
-| `systemd.services` | Manages systemd services | 🔨 TODO |
-| `systemd.service-overrides` | Similar to `systemd.services`, but manages overrides of exisiting services (like those installed by packages) | 🔨 TODO |
+| `systemd` | Manages systemd units | ✅ Done |
 | `users.users` | Manages users | 🔨 TODO |

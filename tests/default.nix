@@ -18,4 +18,9 @@
     modules = [ ./docker/module.nix ];
     expected = ./docker/result.sh;
   };
+
+  systemd = {
+    modules = [ ./systemd/module.nix ];
+    expected = ./systemd/result.sh;
+  };
 }
